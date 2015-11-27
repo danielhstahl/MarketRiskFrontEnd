@@ -16,14 +16,12 @@ var handlebars = exphbs.create({
 app.engine('html', handlebars.engine);
 app.set('view engine', 'html');
 
-//TODO: make this MUCH BETTER ORGANIZED!!!
-
-
 app.get('/', function (req, res) {
    res.render('index');
 });
 io.on('connection', function(socket) {
-  var child = child_process.spawn('/home/daniel/Documents/cpp/marketRisk/./marketRisk',
+  //var child = child_process.spawn('/home/daniel/Documents/cpp/marketRisk/./marketRisk',
+  var child = child_process.spawn('./marketRisk',
     {
       stdio: [
         'pipe', //pipe parent to child
@@ -53,23 +51,6 @@ io.on('connection', function(socket) {
     child.stdin.write("\n");
   });
 });
-
-
-
-//var portfolio=[];
-//var YieldCurveUnExtrapolated={};
-//var historicalResults="";
-//var retreivedHistoricalResults=false;
-//var retreivedYieldResults=false;
-//var retreivedPortfolio=false;
-//var j={"j":0};
-
-
-
-
-
-
-
 
 var getPortfolio=function(numAssets){
   var currdate=new Date();
