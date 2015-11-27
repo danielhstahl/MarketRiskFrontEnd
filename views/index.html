@@ -19,38 +19,70 @@
 <script>
   var socket = io();
   Handlebars.partials = Handlebars.templates;
+  var chart;
+  var hasbutton=false;
   var progressbar = Handlebars.templates['progressbar'];
   var form = Handlebars.templates['MarketRiskFrontEnd'];
+  var display = Handlebars.templates['largetext'];
   var $main=$('#main');
-  $main.html(progressbar);
-  socket.on('update', function(data) {
-    $('#progressBar').css("width", data);
-  });
+  $main.html(progressbar({percent:100}));
   socket.emit("getYield");
-  socket.on('yield', function(data) {
-    console.log(data);
-    createChart(JSON.parse(data));
+  socket.on('data', function(data) {
+    data=JSON.parse(data);
+    var keys=Object.keys(data);
+    if(keys[0]==='Spot'||keys[0]==='Forward'){
+      createChart(data[keys[0]], keys[0]);
+      if(!hasbutton){
+        $main.append("<button class='btn btn-default' onclick=getMC()>Run MC</button>");
+        hasbutton=true;
+      }
+
+    }
+    else if(keys[0]==='percent'){
+      $('#progressBar').css("width", data.percent*100+'%');
+    }
+    else{
+      $main.html(display({data:data}));
+    }
   });
-  socket.on('mc', function(data) {
-    console.log(data);
-  });
-  function createChart(chartData){
-    $main.highcharts({
-      credits:false,
-      title:{
-        text:"Yield"
-      },
-      xAxis:{
-        type:'category'
-      },
-      legend:{
-        enabled:false
-      },
-      series:[{
-        type:'spline',
-        data:chartData
-      }]
-    });
+  getMC=function(){
+    $main.append(progressbar({percent:0}));
+    socket.emit("getMC");
+  };
+
+  function createChart(chartData, name){
+    //$main.
+    if(chart){
+      chart.addSeries({
+        //type:'spline',
+        data:chartData,
+        name:name,
+      });
+    }
+    else{
+      chart=new Highcharts.Chart({
+        credits:false,
+        chart: {
+          type: 'spline',
+          renderTo: 'main',
+          zoomType: 'x'
+        },
+        title:{
+          text:"Spot and Forward Curves"
+        },
+        xAxis:{
+          type:'category'
+        },
+        legend:{
+          enabled:false
+        },
+        series:[{
+          //type:'spline',
+          data:chartData,
+          name:name
+        }]
+      });
+    }
   }
 </script>
 
