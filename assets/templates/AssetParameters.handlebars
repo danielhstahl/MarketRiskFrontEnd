@@ -1,0 +1,13 @@
+<div class='row'>
+
+    {{#each parameter}}
+        <div class="form-group col-md-4 col-sm-6">
+            <label for="{{id}}">{{label}}</label>
+            <input type="text" class="form-control" id="{{id}}" placeholder="{{placeholder}}">
+        </div>
+
+    {{/each}}
+</div>
+<div class='row'>
+<button class='btn btn-primary' onclick='getMC();'>Run</button>
+</div>

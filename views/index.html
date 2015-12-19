@@ -8,32 +8,165 @@
   <link href='/assets/styles/bootstrap.min.css' rel='stylesheet'>
   <script src="/assets/templates/templates.js"></script>
   <script src='/socket.io/socket.io.js'></script>
+  <script src='/assets/js/inputUtilities.js'></script>
 </head>
 <body>
-  <div id='main'>
+    <div class='container'>
+        <div class='jumbotron'>
+        <h2>Market Risk</h2>
+            <p>
+            This standalone app represents the best in class standard in modeling techniques.  The webserver is driven by NodeJS, an asyncronous IO programming language.  The market model itself is implemented in C++ with multi-threading for use across any number of cores.  Automatic differentation is in place to efficiently compute sensitivities.  The model is self-consistent: there is no arbitrage and all assumptions carry across all pricing functions.  
+            </p>
+        </div>
+      <div id='main'>
 
-  </div>
+      </div>
+        <div id='andmore'>
+
+      </div>
+    </div>
+    
 
 
 </body>
 <script>
-  var socket = io();
-  Handlebars.partials = Handlebars.templates;
+    var socket = io();
+    Handlebars.partials = Handlebars.templates;
+    
+    
+    var assets=[{
+        label:"Bond",
+        value:0,
+    },{
+        label:"Euro Dollar Future",
+        value:1
+    },{
+        label:"Bond Call (Zero Coupon)",
+        value:3
+    },{
+        label:"Bond Put (Zero Coupon)",
+        value:4
+    },{
+        label:"Bond Call (Coupon)",
+        value:5
+    },{
+        label:"Bond Put (Coupon)",
+        value:6
+    },{
+        label:"Caplet",
+        value:7
+    },{
+        label:"Swap",
+        value: 8,
+    },{
+        label:"Swaption",
+        value:9
+    }];
+    var assetParameters={
+        "0":[{
+            label:"Maturity (years)",
+            id:"T",
+            placeholder:"1"
+        }],
+        "1":[{
+            label:"Maturity (years)",
+            id:"T",
+            placeholder:"1"
+        },{
+            label:"Floating Tenor (years)",
+            id:"delta",
+            placeholder:".25"
+        }],
+        "3":[{
+            label:"Maturity (years)",
+            id:"T",
+            placeholder:"1"
+        },{
+            label:"Underlying Maturity (years)",
+            id:"Tm",
+            placeholder:"1.25"
+        },{
+            label:"Strike",
+            id:"k",
+            placeholder:".97"
+        }],
+        "4":[{
+            label:"Maturity (years)",
+            id:"T",
+            placeholder:"1"
+        },{
+            label:"Underlying Maturity (years)",
+            id:"Tm",
+            placeholder:"1.25"
+        },{
+            label:"Strike",
+            id:"k",
+            placeholder:".97"
+        }],
+        "7":[{
+            label:"Maturity (years)",
+            id:"T",
+            placeholder:"1"
+        },{
+            label:"Floating Tenor (years)",
+            id:"delta",
+            placeholder:".25"
+        },{
+            label:"Strike",
+            id:"k",
+            placeholder:".02"
+        }],
+        "8":[{
+            label:"Maturity (years)",
+            id:"T",
+            placeholder:"1"
+        },{
+            label:"Floating Tenor (years)",
+            id:"delta",
+            placeholder:".25"
+        },{
+            label:"Swap Rate",
+            id:"k",
+            placeholder:".02"
+        }],
+        "9":[{
+            label:"Maturity (years)",
+            id:"T",
+            placeholder:"1"
+        },{
+            label:"Floating Tenor (years)",
+            id:"delta",
+            placeholder:".25"
+        },{
+            label:"Underlying Maturity (years)",
+            id:"Tm",
+            placeholder:"6"
+        },{
+            label:"Strike",
+            id:"k",
+            placeholder:".03"
+        }]
+    
+    }
+    
   var chart;
   var hasbutton=false;
   var progressbar = Handlebars.templates['progressbar'];
-  var form = Handlebars.templates['MarketRiskFrontEnd'];
+  var form = Handlebars.templates['MarketRiskParameters'];
   var display = Handlebars.templates['largetext'];
+  var parameters = Handlebars.templates['AssetParameters'];
   var $main=$('#main');
+  var $andmore=$('#andmore');
   $main.html(progressbar({percent:100}));
   socket.emit("getYield");
   socket.on('data', function(data) {
     data=JSON.parse(data);
     var keys=Object.keys(data);
     if(keys[0]==='Spot'||keys[0]==='Forward'){
+        console.log(data);
       createChart(data[keys[0]], keys[0]);
       if(!hasbutton){
-        $main.append("<button class='btn btn-default' onclick=getMC()>Run MC</button>");
+        $main.append(form({assets:assets}));
         hasbutton=true;
       }
 
@@ -46,10 +179,165 @@
     }
   });
   getMC=function(){
-    $main.append(progressbar({percent:0}));
-    socket.emit("getMC");
+      var valsToSubmit={};
+    $('.form-control').each(function(num, element){
+        $el=$(element);
+        if($el.val()){
+            valsToSubmit[$el.attr('id')]=parseFloat($el.val());
+        }
+        else{
+            valsToSubmit[$el.attr('id')]=parseFloat($el.attr('placeholder'));
+        }
+    });
+
+      $main.append(progressbar({percent:0}));
+        socket.emit("getMC", valsToSubmit);
   };
 
+    
+    function displayOptions(val){
+        $andmore.html(parameters({parameter:assetParameters[val]}));
+    }
+    
+function insert(element, array) {
+    array.splice(locationOf(element, array) + 1, 0, element);
+    return array;
+}
+function locationOf(element, array, start, end) {
+    start = start || 0;
+    end = end || array.length;
+    var pivot = parseInt(start + (end - start) / 2, 10);
+    if (array[pivot] === element) return pivot;
+    if (end - start <= 1)
+        return array[pivot] > element ? pivot - 1 : pivot;
+    if (array[pivot] < element) {
+        return locationOf(element, array, pivot, end);
+    } else {
+        return locationOf(element, array, start, pivot);
+    }
+}
+var bin=function(data, newData, hData, maxBins){ //full data, new data, bins (in array format), bars (in array "count" format)           
+    var n=hData.length;
+    if(n===0){
+        data.push(newData);
+        hData.push([newData, 0]);
+        return hData;
+    }
+    data=insert(newData, data);
+    if(newData<hData[0][0]){
+        hData=rebin(data, maxBins);
+    }
+    else if(newData>hData[n-1][0]){
+        hData=rebin(data, maxBins);
+    }
+    else{
+        var i=0;
+        while(newData>hData[i][0]){
+            i++;
+        }
+        hData[i-1][1]++;               
+    }
+
+    return hData;
+}
+function rebin(data, numBins){
+
+    var n=data.length;
+    var histData=fullbin(data, numBins);
+
+    var k=1;
+    for(var i=0; i<n; i++){
+        if(data[i]>histData[k][0]){
+            k++;
+        }
+        histData[k-1][1]++;
+    }
+    return histData;
+}
+
+var fullbin=function(data, numBins){
+    var min=data[0];
+    var max=data[data.length-1];
+    var hData=[];
+    var incre=(max-min)/numBins;
+    for(var i=0; i<(numBins+1); i++){
+        hData.push([min+i*incre, 0]);
+    }
+    return hData;
+}
+
+       
+function createHist(loadFunction) {  
+    var chrt = new Highcharts.Chart({
+        chart: {
+                
+            renderTo: 'chartist',
+            type: 'column',
+            //animation: Highcharts.svg, // don't animate in old IE
+            marginRight: 10,
+            events: {
+                load: loadFunction/*function () {
+                    
+                    // set up the updating of the chart each second
+                    var series = this.series[0];
+                    var bins=[];
+                    var data=[];
+                    setInterval(function () {
+                        //var rnd=Math.random();
+                        var rnd=rnd2();
+                        var numBins=20;
+                        bins=bin(data, rnd, bins, numBins);
+                        var dataH=[];
+                        for(var i=0; i<numBins; i++){
+                            dataH.push([""+Math.round(bins[i][0]*100)/100+'-'+Math.round(bins[i+1][0]*100)/100+"", bins[i][1]]);
+                        }
+                        series.setData(dataH, true, true);
+                        //series.setData(bins, true, true);
+                    }, 20);
+                }*/
+            }
+        },
+        plotOptions: {
+            series: {
+                groupPadding: 0,
+                pointPadding: 0,
+                borderWidth: 0
+            }
+        },
+        title: {
+            text: 'Live random data'
+        },
+        xAxis: {
+            type: 'category'
+        },
+        yAxis: {
+            title: {
+                text: 'Value'
+            },
+            plotLines: [{
+                value: 0,
+                width: 1,
+                color: '#808080'
+            }]
+        },
+        tooltip: {
+           formatter: function() {
+                return Highcharts.numberFormat(this.value, 2, ".", ",");
+            }
+        },
+        legend: {
+            enabled: false
+        },
+        exporting: {
+            enabled: false
+        },
+        series: [{
+            name: 'Random data',
+            data: []
+        }]
+    });
+
+ }
   function createChart(chartData, name){
     //$main.
     if(chart){

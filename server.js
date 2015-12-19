@@ -21,7 +21,7 @@ app.get('/', function (req, res) {
 });
 io.on('connection', function(socket) {
   //var child = child_process.spawn('/home/daniel/Documents/cpp/marketRisk/./marketRisk',
-  var child = child_process.spawn('./marketRisk',
+  var child = child_process.spawn('./OptionPricing',
     {
       stdio: [
         'pipe', //pipe parent to child
@@ -31,7 +31,8 @@ io.on('connection', function(socket) {
     }
   );
   child.stdout.on('data', function (data) {
-    io.emit('data', data.toString('utf8'));
+      console.log(""+data);
+     io.emit('data', data.toString('utf8'));
   });
   child.stderr.on('data', function (data) {
     console.log('stderr: ' + data);
@@ -46,8 +47,9 @@ io.on('connection', function(socket) {
 
   });
   socket.on('getMC', function(data) {
-    var portfolio=getPortfolio(3000);
-    child.stdin.write(JSON.stringify(portfolio));
+    //var portfolio=getPortfolio(3000);
+      console.log(data);
+    child.stdin.write(JSON.stringify(data));
     child.stdin.write("\n");
   });
 });
