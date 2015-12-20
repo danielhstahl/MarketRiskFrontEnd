@@ -9,6 +9,7 @@
   <script src="/assets/templates/templates.js"></script>
   <script src='/socket.io/socket.io.js'></script>
   <script src='/assets/js/inputUtilities.js'></script>
+  <script src='/assets/js/loadModal.js'></script>
 </head>
 <body>
     <div class='container'>
@@ -33,7 +34,6 @@
     var socket = io();
     Handlebars.partials = Handlebars.templates;
     
-    
     var assets=[{
         label:"Bond",
         value:0,
@@ -57,7 +57,7 @@
         value:7
     },{
         label:"Swap",
-        value: 8,
+        value:8,
     },{
         label:"Swaption",
         value:9
@@ -146,232 +146,134 @@
             id:"k",
             placeholder:".03"
         }]
-    
     }
-    
-  var chart;
-  var hasbutton=false;
-  var progressbar = Handlebars.templates['progressbar'];
-  var form = Handlebars.templates['MarketRiskParameters'];
-  var display = Handlebars.templates['largetext'];
-  var parameters = Handlebars.templates['AssetParameters'];
-  var $main=$('#main');
-  var $andmore=$('#andmore');
-  $main.html(progressbar({percent:100}));
-  socket.emit("getYield");
-  socket.on('data', function(data) {
-    data=JSON.parse(data);
-    var keys=Object.keys(data);
-    if(keys[0]==='Spot'||keys[0]==='Forward'){
+    var chart;
+    var hasbutton=false;
+    var progressbar = Handlebars.templates['progressbar'];
+    var form = Handlebars.templates['MarketRiskParameters'];
+    var display = Handlebars.templates['largetext'];
+    var parameters = Handlebars.templates['AssetParameters'];
+    var modalBRS = Handlebars.templates['modal'];
+    var modal=new loadModal(modalBRS);
+    var $main=$('#main');
+    var $andmore=$('#andmore');
+    $main.html(progressbar({percent:100}));
+    socket.emit("getYield");
+    socket.on('data', function(data) {
+        data=JSON.parse(data);
         console.log(data);
-      createChart(data[keys[0]], keys[0]);
-      if(!hasbutton){
-        $main.append(form({assets:assets}));
-        hasbutton=true;
-      }
-
-    }
-    else if(keys[0]==='percent'){
-      $('#progressBar').css("width", data.percent*100+'%');
-    }
-    else{
-      $main.html(display({data:data}));
-    }
-  });
-  getMC=function(){
-      var valsToSubmit={};
-    $('.form-control').each(function(num, element){
-        $el=$(element);
-        if($el.val()){
-            valsToSubmit[$el.attr('id')]=parseFloat($el.val());
+        var keys=Object.keys(data);
+        if(keys[0]==='Spot'||keys[0]==='Forward'){
+            createChart(data[keys[0]], keys[0]);
+            if(!hasbutton){
+                $main.append(form({assets:assets}));
+                hasbutton=true;
+            }
+        }
+        else if(keys[0]==='percent'){
+            $('#progressBar').css("width", data.percent*100+'%');
         }
         else{
-            valsToSubmit[$el.attr('id')]=parseFloat($el.attr('placeholder'));
+            loadHistogram(modal.interior[0], data['bins'], data['count']);
         }
     });
-
-      $main.append(progressbar({percent:0}));
+    getMC=function(){
+        var valsToSubmit={};
+        $('.form-control').each(function(num, element){
+            $el=$(element);
+            if($el.val()){
+                valsToSubmit[$el.attr('id')]=parseFloat($el.val());
+            }
+            else{
+                valsToSubmit[$el.attr('id')]=parseFloat($el.attr('placeholder'));
+            }
+        });
+        modal.launch("Histogram of Price");
+        modal.replaceInterior(progressbar({percent:100}));
         socket.emit("getMC", valsToSubmit);
-  };
-
-    
+    };
     function displayOptions(val){
         $andmore.html(parameters({parameter:assetParameters[val]}));
     }
-    
-function insert(element, array) {
-    array.splice(locationOf(element, array) + 1, 0, element);
-    return array;
-}
-function locationOf(element, array, start, end) {
-    start = start || 0;
-    end = end || array.length;
-    var pivot = parseInt(start + (end - start) / 2, 10);
-    if (array[pivot] === element) return pivot;
-    if (end - start <= 1)
-        return array[pivot] > element ? pivot - 1 : pivot;
-    if (array[pivot] < element) {
-        return locationOf(element, array, pivot, end);
-    } else {
-        return locationOf(element, array, start, pivot);
-    }
-}
-var bin=function(data, newData, hData, maxBins){ //full data, new data, bins (in array format), bars (in array "count" format)           
-    var n=hData.length;
-    if(n===0){
-        data.push(newData);
-        hData.push([newData, 0]);
-        return hData;
-    }
-    data=insert(newData, data);
-    if(newData<hData[0][0]){
-        hData=rebin(data, maxBins);
-    }
-    else if(newData>hData[n-1][0]){
-        hData=rebin(data, maxBins);
-    }
-    else{
-        var i=0;
-        while(newData>hData[i][0]){
-            i++;
-        }
-        hData[i-1][1]++;               
-    }
-
-    return hData;
-}
-function rebin(data, numBins){
-
-    var n=data.length;
-    var histData=fullbin(data, numBins);
-
-    var k=1;
-    for(var i=0; i<n; i++){
-        if(data[i]>histData[k][0]){
-            k++;
-        }
-        histData[k-1][1]++;
-    }
-    return histData;
-}
-
-var fullbin=function(data, numBins){
-    var min=data[0];
-    var max=data[data.length-1];
-    var hData=[];
-    var incre=(max-min)/numBins;
-    for(var i=0; i<(numBins+1); i++){
-        hData.push([min+i*incre, 0]);
-    }
-    return hData;
-}
-
-       
-function createHist(loadFunction) {  
-    var chrt = new Highcharts.Chart({
-        chart: {
-                
-            renderTo: 'chartist',
-            type: 'column',
-            //animation: Highcharts.svg, // don't animate in old IE
-            marginRight: 10,
-            events: {
-                load: loadFunction/*function () {
-                    
-                    // set up the updating of the chart each second
-                    var series = this.series[0];
-                    var bins=[];
-                    var data=[];
-                    setInterval(function () {
-                        //var rnd=Math.random();
-                        var rnd=rnd2();
-                        var numBins=20;
-                        bins=bin(data, rnd, bins, numBins);
-                        var dataH=[];
-                        for(var i=0; i<numBins; i++){
-                            dataH.push([""+Math.round(bins[i][0]*100)/100+'-'+Math.round(bins[i+1][0]*100)/100+"", bins[i][1]]);
-                        }
-                        series.setData(dataH, true, true);
-                        //series.setData(bins, true, true);
-                    }, 20);
-                }*/
-            }
-        },
-        plotOptions: {
-            series: {
-                groupPadding: 0,
-                pointPadding: 0,
-                borderWidth: 0
-            }
-        },
-        title: {
-            text: 'Live random data'
-        },
-        xAxis: {
-            type: 'category'
-        },
-        yAxis: {
-            title: {
-                text: 'Value'
+    function loadHistogram(id, categories, values){
+        var chrt = new Highcharts.Chart({
+            chart: {    
+                title:"",
+                renderTo: id,
+                type: 'column',
+                marginRight: 10,
             },
-            plotLines: [{
-                value: 0,
-                width: 1,
-                color: '#808080'
+            credits:false,
+            plotOptions: {
+                series: {
+                    groupPadding: 0,
+                    pointPadding: 0,
+                    borderWidth: 0
+                }
+            },
+            xAxis: {
+                type: 'category',
+                categories:categories
+            },
+            yAxis: {
+                title: {
+                    text: 'Value'
+                },
+                plotLines: [{
+                    value: 0,
+                    width: 1,
+                    color: '#808080'
+                }]
+            },
+            tooltip: {
+               formatter: function() {
+                    return Highcharts.numberFormat(this.value, 2, ".", ",");
+                }
+            },
+            legend: {
+                enabled: false
+            },
+            exporting: {
+                enabled: false
+            },
+            series: [{
+                name: 'Random data',
+                data: values
             }]
-        },
-        tooltip: {
-           formatter: function() {
-                return Highcharts.numberFormat(this.value, 2, ".", ",");
-            }
-        },
-        legend: {
-            enabled: false
-        },
-        exporting: {
-            enabled: false
-        },
-        series: [{
-            name: 'Random data',
-            data: []
-        }]
-    });
+        });
+    }
 
- }
-  function createChart(chartData, name){
-    //$main.
-    if(chart){
-      chart.addSeries({
-        //type:'spline',
-        data:chartData,
-        name:name,
-      });
+    function createChart(chartData, name){
+        if(chart){
+            chart.addSeries({
+                data:chartData,
+                name:name
+            });
+        }
+        else{
+            chart=new Highcharts.Chart({
+                credits:false,
+                chart: {
+                    type: 'spline',
+                    renderTo: 'main',
+                    zoomType: 'x'
+                },
+                title:{
+                    text:"Spot and Forward Curves"
+                },
+                xAxis:{
+                    type:'category'
+                },
+                legend:{
+                    enabled:false
+                },
+                series:[{
+                    data:chartData,
+                    name:name
+                }]
+            });
+        }
     }
-    else{
-      chart=new Highcharts.Chart({
-        credits:false,
-        chart: {
-          type: 'spline',
-          renderTo: 'main',
-          zoomType: 'x'
-        },
-        title:{
-          text:"Spot and Forward Curves"
-        },
-        xAxis:{
-          type:'category'
-        },
-        legend:{
-          enabled:false
-        },
-        series:[{
-          //type:'spline',
-          data:chartData,
-          name:name
-        }]
-      });
-    }
-  }
 </script>
 
 </html>

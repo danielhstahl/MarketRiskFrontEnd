@@ -8,7 +8,6 @@ var app = express();
 var server = http.createServer(app).listen(8000); //required fro socket.io
 var io = require('socket.io').listen(server);
 app.use(bodyParser.json());
-//app.use('/assets', express.static('node_modules')); //for socket.io
 app.use('/assets', express.static('assets'));
 var handlebars = exphbs.create({
   extname: '.html'
@@ -19,42 +18,42 @@ app.set('view engine', 'html');
 app.get('/', function (req, res) {
    res.render('index');
 });
+var numberToCount=0;
 io.on('connection', function(socket) {
-  //var child = child_process.spawn('/home/daniel/Documents/cpp/marketRisk/./marketRisk',
-  var child = child_process.spawn('./OptionPricing',
-    {
-      stdio: [
-        'pipe', //pipe parent to child
-        'pipe', // pipe child's stdout to parent
-        'pipe' // pipe
-      ]
-    }
-  );
-  child.stdout.on('data', function (data) {
-      console.log(""+data);
-     io.emit('data', data.toString('utf8'));
-  });
-  child.stderr.on('data', function (data) {
-    console.log('stderr: ' + data);
-  });
-  child.on('close', function (code) {
-    console.log('child process exited with code ' + code);
-  });
-  socket.on('getYield', function(data) { //if "submit" is clicked ona  project page
-    //retreiveFutures(child);
-    var yields=new handleYield(child);
-    yields.retreiveLiborAndSwap(child);
-
-  });
-  socket.on('getMC', function(data) {
-    //var portfolio=getPortfolio(3000);
-      console.log(data);
-    child.stdin.write(JSON.stringify(data));
-    child.stdin.write("\n");
-  });
+    var child = child_process.spawn('./OptionPricing',
+        {
+            stdio: [
+                'pipe', //pipe parent to child
+                'pipe', // pipe child's stdout to parent
+                'pipe' // pipe
+            ]
+        }
+    );
+    child.stdout.on('data', function (data) {
+        //console.log(""+data);
+        io.emit('data', data.toString('utf8'));
+    });
+    child.stderr.on('data', function (data) {
+        console.log('stderr: ' + data);
+    });
+    child.on('close', function (code) {
+        console.log('child process exited with code ' + code);
+    });
+    socket.on('getYield', function(data) { //if "submit" is clicked ona  project page
+        var yields=new handleYield(child);
+        yields.retreiveLiborAndSwap(child);
+    });
+    socket.on('getMC', function(data) { //send MC to child
+        child.stdin.write(JSON.stringify(data));
+        child.stdin.write("\n");
+    });
+    socket.on('disconnect', function(){
+        //console.log("at 51");
+        child.kill();
+    });
 });
 
-var getPortfolio=function(numAssets){
+/*var getPortfolio=function(numAssets){
   var currdate=new Date();
   var portfolio=[];
   Date.prototype.addDays = function(days){
@@ -83,4 +82,4 @@ var getPortfolio=function(numAssets){
   }
   return portfolio;
 //  retreivedPortfolio=true;
-}
+}*/
