@@ -8,7 +8,7 @@ function loadModal(hndlBarsModal){
     this.modal=hndlBarsModal;
     var slf=this;
     this.launch=function(title){
-        var modal=slf.modal({Title:title});
+        var modal=slf.modal({title:title});
         self=$($(modal)[2]);
         self.modal('show');
         self.on('hidden.bs.modal', function(){ 

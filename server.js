@@ -31,7 +31,7 @@ io.on('connection', function(socket) {
     );
     child.stdout.on('data', function (data) {
         //console.log(""+data);
-        io.emit('data', data.toString('utf8'));
+        socket.emit('data', data.toString('utf8'));
     });
     child.stderr.on('data', function (data) {
         console.log('stderr: ' + data);

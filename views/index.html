@@ -198,12 +198,13 @@
     function loadHistogram(id, categories, values){
         var chrt = new Highcharts.Chart({
             chart: {    
-                title:"",
+                
                 renderTo: id,
                 type: 'column',
                 marginRight: 10,
             },
             credits:false,
+            title:"",
             plotOptions: {
                 series: {
                     groupPadding: 0,
