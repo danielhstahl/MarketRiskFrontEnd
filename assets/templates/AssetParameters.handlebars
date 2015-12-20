@@ -1,5 +1,7 @@
 <div class='row'>
-
+    <div class="col-sm-12">
+        <h3>{{asset}} specific parameters</h3>
+    </div>
     {{#each parameter}}
         <div class="form-group col-md-4 col-sm-6">
             <label for="{{id}}">{{label}}</label>
@@ -9,5 +11,7 @@
     {{/each}}
 </div>
 <div class='row'>
-<button class='btn btn-primary' onclick='getMC();'>Run</button>
+    <div class="form-group col-md-4 col-sm-6">
+        <button class='btn btn-primary' onclick='getMC();'>Run</button>
+    </div>
 </div>

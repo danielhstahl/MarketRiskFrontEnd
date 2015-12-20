@@ -163,12 +163,12 @@
         data=JSON.parse(data);
         console.log(data);
         var keys=Object.keys(data);
-        if(keys[0]==='Spot'||keys[0]==='Forward'){
-            createChart(data[keys[0]], keys[0]);
+        if(keys[0]==='Spot'||keys[0]==='Forward'){ 
             if(!hasbutton){
-                $main.append(form({assets:assets}));
+                $main.html(form({assets:assets}));
                 hasbutton=true;
             }
+            createChart(data[keys[0]], keys[0]);
         }
         else if(keys[0]==='percent'){
             $('#progressBar').css("width", data.percent*100+'%');
@@ -192,8 +192,8 @@
         modal.replaceInterior(progressbar({percent:100}));
         socket.emit("getMC", valsToSubmit);
     };
-    function displayOptions(val){
-        $andmore.html(parameters({parameter:assetParameters[val]}));
+    function displayOptions(val, label){
+        $andmore.html(parameters({asset:label, parameter:assetParameters[val]}));
     }
     function loadHistogram(id, categories, values){
         var chrt = new Highcharts.Chart({
@@ -202,6 +202,7 @@
                 renderTo: id,
                 type: 'column',
                 marginRight: 10,
+                zoomType: 'x'
             },
             credits:false,
             title:"",
@@ -256,7 +257,7 @@
                 credits:false,
                 chart: {
                     type: 'spline',
-                    renderTo: 'main',
+                    renderTo: 'chart',
                     zoomType: 'x'
                 },
                 title:{

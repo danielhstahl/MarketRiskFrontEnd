@@ -13,11 +13,13 @@ templates['AssetParameters'] = template({"1":function(container,depth0,helpers,p
     + alias4(((helper = (helper = helpers.placeholder || (depth0 != null ? depth0.placeholder : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"placeholder","hash":{},"data":data}) : helper)))
     + "\">\n        </div>\n\n";
 },"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
-    var stack1;
+    var stack1, helper, alias1=depth0 != null ? depth0 : {};
 
-  return "<div class='row'>\n\n"
-    + ((stack1 = helpers.each.call(depth0 != null ? depth0 : {},(depth0 != null ? depth0.parameter : depth0),{"name":"each","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
-    + "</div>\n<div class='row'>\n<button class='btn btn-primary' onclick='getMC();'>Run</button>\n</div>";
+  return "<div class='row'>\n    <div class=\"col-sm-12\">\n        <h3>"
+    + container.escapeExpression(((helper = (helper = helpers.asset || (depth0 != null ? depth0.asset : depth0)) != null ? helper : helpers.helperMissing),(typeof helper === "function" ? helper.call(alias1,{"name":"asset","hash":{},"data":data}) : helper)))
+    + " specific parameters</h3>\n    </div>\n"
+    + ((stack1 = helpers.each.call(alias1,(depth0 != null ? depth0.parameter : depth0),{"name":"each","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
+    + "</div>\n<div class='row'>\n    <div class=\"form-group col-md-4 col-sm-6\">\n        <button class='btn btn-primary' onclick='getMC();'>Run</button>\n    </div>\n</div>";
 },"useData":true});
 templates['MarketRiskParameters'] = template({"1":function(container,depth0,helpers,partials,data) {
     var helper, alias1=depth0 != null ? depth0 : {}, alias2=helpers.helperMissing, alias3="function", alias4=container.escapeExpression;
@@ -30,7 +32,7 @@ templates['MarketRiskParameters'] = template({"1":function(container,depth0,help
 },"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
     var stack1;
 
-  return "<div class='row'>\n    <div class=\"form-group col-md-4 col-sm-6\">\n        <label for=\"asset\">Asset Type</label>\n        <select id='asset' class=\"form-control\" onchange=\"displayOptions(this.value)\">\n            <option value=\"\" disabled selected style=\"display:none;\"></option>\n"
+  return "<div class='row'>\n    <div class='col-md-8 col-sm-12' id='chart'>\n    \n    </div>\n    <div class=\"form-group col-md-4 col-sm-12\">\n        <label for=\"asset\">Asset Type</label>\n        <select id='asset' class=\"form-control\" onchange=\"displayOptions(this.value, this.options[this.selectedIndex].text)\">\n            <option value=\"\" disabled selected style=\"display:none;\"></option>\n"
     + ((stack1 = helpers.each.call(depth0 != null ? depth0 : {},(depth0 != null ? depth0.assets : depth0),{"name":"each","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
     + "        </select>\n    </div>\n    <div class=\"form-group col-md-4 col-sm-6\">\n        <label for=\"n\">Number of simulations</label>\n        <input type=\"text\" class=\"form-control\" id=\"n\" placeholder=\"1000\">\n    </div>\n    <div class=\"form-group col-md-4 col-sm-6\">\n        <label for=\"sigma\">Volatility</label>\n        <input type=\"text\" class=\"form-control\" id=\"sigma\" placeholder=\".04\">\n    </div>\n    <div class=\"form-group col-md-4 col-sm-6\">\n        <label for=\"a\">Mean Reversion</label>\n        <input type=\"text\" class=\"form-control\" id=\"a\" placeholder=\".2\">\n    </div>\n    <div class=\"form-group col-md-4 col-sm-6\">\n        <label for=\"t\">Simulate to date (in days)</label>\n        <input type=\"text\" class=\"form-control\" id=\"t\" placeholder=\"10\">\n    </div>\n</div>";
 },"useData":true});
