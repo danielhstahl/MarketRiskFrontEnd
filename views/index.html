@@ -66,87 +66,163 @@
         "0":[{
             label:"Maturity (years)",
             id:"T",
-            placeholder:"1"
+            placeholder:"1",
+            depends:"t",
+            validation:function(val, val1){
+                return !isNaN(parseFloat(val)) && isFinite(val) && val*360>val1;
+            }
         }],
         "1":[{
             label:"Maturity (years)",
             id:"T",
-            placeholder:"1"
+            placeholder:"1",
+            depends:"t",
+            validation:function(val, val1){
+                return !isNaN(parseFloat(val)) && isFinite(val) && val*360>val1;
+            }
         },{
             label:"Floating Tenor (years)",
             id:"delta",
-            placeholder:".25"
+            placeholder:".25",
+            validation:function(val, val1){
+                return !isNaN(parseFloat(val)) && isFinite(val) && val>val1;
+            }
         }],
         "3":[{
             label:"Maturity (years)",
             id:"T",
-            placeholder:"1"
+            placeholder:"1",
+            depends:"t",
+            validation:function(val, val1){
+                return !isNaN(parseFloat(val)) && isFinite(val) && val*360>val1;
+            }
         },{
             label:"Underlying Maturity (years)",
             id:"Tm",
-            placeholder:"1.25"
+            placeholder:"1.25",
+            depends:"T",
+            validation:function(val, val1){
+                return !isNaN(parseFloat(val)) && isFinite(val) && val>val1;
+            }
         },{
             label:"Strike",
             id:"k",
-            placeholder:".97"
+            placeholder:".97",
+            validation:function(val, val1){
+                return !isNaN(parseFloat(val)) && isFinite(val) && val>val1;
+            }
         }],
         "4":[{
             label:"Maturity (years)",
             id:"T",
-            placeholder:"1"
+            placeholder:"1",
+            depends:"t",
+            validation:function(val, val1){
+                return !isNaN(parseFloat(val)) && isFinite(val) && val*360>val1;
+            }
         },{
             label:"Underlying Maturity (years)",
             id:"Tm",
-            placeholder:"1.25"
+            placeholder:"1.25",
+            depends:"T",
+            validation:function(val, val1){
+                return !isNaN(parseFloat(val)) && isFinite(val) && val>val1;
+            }
         },{
             label:"Strike",
             id:"k",
-            placeholder:".97"
+            placeholder:".97",
+            validation:function(val, val1){
+                return !isNaN(parseFloat(val)) && isFinite(val) && val>val1;
+            }
         }],
         "7":[{
             label:"Maturity (years)",
             id:"T",
-            placeholder:"1"
+            placeholder:"1",
+            depends:"t",
+            validation:function(val, val1){
+                return !isNaN(parseFloat(val)) && isFinite(val) && val*360>val1;
+            }
         },{
             label:"Floating Tenor (years)",
             id:"delta",
-            placeholder:".25"
+            placeholder:".25",
+            validation:function(val, val1){
+                return !isNaN(parseFloat(val)) && isFinite(val) && val>val1;
+            }
         },{
             label:"Strike",
             id:"k",
-            placeholder:".02"
+            placeholder:".02",
+            validation:function(val, val1){
+                return !isNaN(parseFloat(val)) && isFinite(val) && val>val1;
+            }
         }],
         "8":[{
             label:"Maturity (years)",
             id:"T",
-            placeholder:"1"
+            placeholder:"1",
+            depends:"t",
+            validation:function(val, val1){
+                return !isNaN(parseFloat(val)) && isFinite(val) && val*360>val1;
+            }
         },{
             label:"Floating Tenor (years)",
             id:"delta",
-            placeholder:".25"
+            placeholder:".25",
+            validation:function(val, val1){
+                return !isNaN(parseFloat(val)) && isFinite(val) && val>val1;
+            }
         },{
             label:"Swap Rate",
             id:"k",
-            placeholder:".02"
+            placeholder:".02",
+            validation:function(val, val1){
+                return !isNaN(parseFloat(val)) && isFinite(val) && val>val1;
+            }
         }],
         "9":[{
             label:"Maturity (years)",
             id:"T",
-            placeholder:"1"
+            placeholder:"1",
+            depends:"t",
+            validation:function(val, val1){
+                return !isNaN(parseFloat(val)) && isFinite(val) && val*360>val1;
+            }
         },{
             label:"Floating Tenor (years)",
             id:"delta",
-            placeholder:".25"
+            placeholder:".25",
+            validation:function(val, val1){
+                return !isNaN(parseFloat(val)) && isFinite(val) && val>val1;
+            }
         },{
             label:"Underlying Maturity (years)",
             id:"Tm",
-            placeholder:"6"
+            placeholder:"6",
+            depends:"T",
+            validation:function(val, val1){
+                return !isNaN(parseFloat(val)) && isFinite(val) && val>val1;
+            }
         },{
             label:"Strike",
             id:"k",
-            placeholder:".03"
+            placeholder:".03",
+            validation:function(val, val1){
+                return !isNaN(parseFloat(val)) && isFinite(val) && val>val1;
+            }
         }]
     }
+    var validator={};
+    for(key in assetParameters){
+        var n=assetParameters[key].length;
+        validator[key]={};
+        for(var i=0; i<n; i++){
+            validator[key][assetParameters[key][i].id]=assetParameters[key][i].validation;
+        }
+    }
+    var selectedAsset="";
     var chart;
     var hasbutton=false;
     var progressbar = Handlebars.templates['progressbar'];
@@ -157,6 +233,8 @@
     var modal=new loadModal(modalBRS);
     var $main=$('#main');
     var $andmore=$('#andmore');
+
+    
     $main.html(progressbar({percent:100}));
     socket.emit("getYield");
     socket.on('data', function(data) {
@@ -179,20 +257,45 @@
     });
     getMC=function(){
         var valsToSubmit={};
+        var isValidated=true;
         $('.form-control').each(function(num, element){
             $el=$(element);
-            if($el.val()){
-                valsToSubmit[$el.attr('id')]=parseFloat($el.val());
+            var depends=$el.data('dependency');
+            var vl=$el.val()||$el.attr('placeholder');
+            var vl1=0;
+            if(depends){
+                vl1=$('#'+depends);
+                vl1=vl1.val()||vl1.attr('placeholder');
+            }
+            var id=$el.attr('id');
+            if(validator[selectedAsset][id]){
+                var validate=validator[selectedAsset][id](vl, vl1);
+                if(validate){
+                    valsToSubmit[id]=parseFloat(vl);
+                    $el.parent().removeClass('has-error');
+                }
+                else{
+                    isValidated=false;
+                    $el.parent().addClass('has-error');
+                }
             }
             else{
-                valsToSubmit[$el.attr('id')]=parseFloat($el.attr('placeholder'));
+                valsToSubmit[id]=parseFloat(vl);
             }
         });
-        modal.launch("Histogram of Price");
-        modal.replaceInterior(progressbar({percent:100}));
-        socket.emit("getMC", valsToSubmit);
+        if(isValidated){
+            modal.launch("Histogram of Price");
+            modal.replaceInterior(progressbar({percent:100}));
+            console.log(valsToSubmit);
+            socket.emit("getMC", valsToSubmit);
+        }
+        else{
+            alert("Data entry error!");
+        }
+        
     };
     function displayOptions(val, label){
+        selectedAsset=val;
         $andmore.html(parameters({asset:label, parameter:assetParameters[val]}));
     }
     function loadHistogram(id, categories, values){

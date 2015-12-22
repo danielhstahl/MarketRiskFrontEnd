@@ -13,18 +13,18 @@
     </div>
     <div class="form-group col-md-4 col-sm-6">
         <label for="n">Number of simulations</label>
-        <input type="text" class="form-control" id="n" placeholder="1000">
+        <input type="text" class="form-control" id="n" placeholder="1000" pattern="/^[+]?([0-9])$/">
     </div>
     <div class="form-group col-md-4 col-sm-6">
         <label for="sigma">Volatility</label>
-        <input type="text" class="form-control" id="sigma" placeholder=".04">
+        <input type="text" class="form-control" id="sigma" placeholder=".04" pattern="/^[+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)$/">
     </div>
     <div class="form-group col-md-4 col-sm-6">
         <label for="a">Mean Reversion</label>
-        <input type="text" class="form-control" id="a" placeholder=".2">
+        <input type="text" class="form-control" id="a" placeholder=".2" pattern="/^[+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)$/">
     </div>
     <div class="form-group col-md-4 col-sm-6">
         <label for="t">Simulate to date (in days)</label>
-        <input type="text" class="form-control" id="t" placeholder="10">
+        <input type="text" class="form-control" id="t" placeholder="10" pattern="/^[+]?([0-9]+(?:[\.][0-9]*)?|\.[0-9]+)$/"> 
     </div>
 </div>
