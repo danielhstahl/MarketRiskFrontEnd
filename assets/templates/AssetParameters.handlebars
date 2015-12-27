@@ -1,17 +1,7 @@
-<div class='row'>
-    <div class="col-sm-12">
-        <h3>{{asset}} specific parameters</h3>
+{{#each parameter}}
+    <div class="form-group col-md-4 col-sm-12">
+        <label for="{{id}}">{{label}}</label>
+        <label class='errmsg control-label'></label>
+        <input type="text" class="form-control" id="{{id}}" placeholder="{{placeholder}}" data-dependency="{{depends}}">
     </div>
-    {{#each parameter}}
-        <div class="form-group col-md-4 col-sm-6">
-            <label for="{{id}}">{{label}}</label>
-            <input type="text" class="form-control" id="{{id}}" placeholder="{{placeholder}}" data-dependency="{{depends}}">
-        </div>
-
-    {{/each}}
-</div>
-<div class='row'>
-    <div class="form-group col-md-4 col-sm-6">
-        <button class='btn btn-primary' onclick='getMC();'>Run</button>
-    </div>
-</div>
+{{/each}}

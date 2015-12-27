@@ -73,7 +73,8 @@
             depends:"t",
             validation:function(val, val1){
                 return !isNaN(parseFloat(val)) && isFinite(val) && val*360>val1;
-            }
+            },
+            errMessage:"Maturity must be greater than the \"Simulate to date\""
         }],
         "1":[{
             label:"Maturity (years)",
@@ -82,14 +83,16 @@
             depends:"t",
             validation:function(val, val1){
                 return !isNaN(parseFloat(val)) && isFinite(val) && val*360>val1;
-            }
+            },
+            errMessage:"Maturity must be greater than the \"Simulate to date\""
         },{
             label:"Floating Tenor (years)",
             id:"delta",
             placeholder:".25",
             validation:function(val, val1){
                 return !isNaN(parseFloat(val)) && isFinite(val) && val>val1;
-            }
+            },
+            errMessage:"Floating Tenor must be greater than 0"
         }],
         "3":[{
             label:"Maturity (years)",
@@ -98,7 +101,8 @@
             depends:"t",
             validation:function(val, val1){
                 return !isNaN(parseFloat(val)) && isFinite(val) && val*360>val1;
-            }
+            },
+            errMessage:"Maturity must be greater than the \"Simulate to date\""
         },{
             label:"Underlying Maturity (years)",
             id:"Tm",
@@ -106,14 +110,16 @@
             depends:"T",
             validation:function(val, val1){
                 return !isNaN(parseFloat(val)) && isFinite(val) && val>val1;
-            }
+            },
+            errMessage:"Underlying Maturity must be greater than Maturity"
         },{
             label:"Strike",
             id:"k",
             placeholder:".97",
             validation:function(val, val1){
                 return !isNaN(parseFloat(val)) && isFinite(val) && val>val1;
-            }
+            },
+            errMessage:"Strike must be greater than zero"
         }],
         "4":[{
             label:"Maturity (years)",
@@ -122,7 +128,8 @@
             depends:"t",
             validation:function(val, val1){
                 return !isNaN(parseFloat(val)) && isFinite(val) && val*360>val1;
-            }
+            },
+            errMessage:"Maturity must be greater than the \"Simulate to date\""
         },{
             label:"Underlying Maturity (years)",
             id:"Tm",
@@ -130,14 +137,16 @@
             depends:"T",
             validation:function(val, val1){
                 return !isNaN(parseFloat(val)) && isFinite(val) && val>val1;
-            }
+            },
+            errMessage:"Underlying Maturity must be greater than Maturity"
         },{
             label:"Strike",
             id:"k",
             placeholder:".97",
             validation:function(val, val1){
                 return !isNaN(parseFloat(val)) && isFinite(val) && val>val1;
-            }
+            },
+            errMessage:"Strike must be greater than zero"
         }],
         "7":[{
             label:"Maturity (years)",
@@ -146,21 +155,24 @@
             depends:"t",
             validation:function(val, val1){
                 return !isNaN(parseFloat(val)) && isFinite(val) && val*360>val1;
-            }
+            },
+            errMessage:"Maturity must be greater than the \"Simulate to date\""
         },{
             label:"Floating Tenor (years)",
             id:"delta",
             placeholder:".25",
             validation:function(val, val1){
                 return !isNaN(parseFloat(val)) && isFinite(val) && val>val1;
-            }
+            },
+            errMessage:"Tenor must be greater than zero"
         },{
             label:"Strike",
             id:"k",
             placeholder:".02",
             validation:function(val, val1){
                 return !isNaN(parseFloat(val)) && isFinite(val) && val>val1;
-            }
+            },
+            errMessage:"Strike must be greater than zero"
         }],
         "8":[{
             label:"Maturity (years)",
@@ -169,21 +181,24 @@
             depends:"t",
             validation:function(val, val1){
                 return !isNaN(parseFloat(val)) && isFinite(val) && val*360>val1;
-            }
+            },
+            errMessage:"Maturity must be greater than the \"Simulate to date\""
         },{
             label:"Floating Tenor (years)",
             id:"delta",
             placeholder:".25",
             validation:function(val, val1){
                 return !isNaN(parseFloat(val)) && isFinite(val) && val>val1;
-            }
+            },
+            errMessage:"Tenor must be greater than zero"
         },{
             label:"Swap Rate",
             id:"k",
             placeholder:".02",
             validation:function(val, val1){
                 return !isNaN(parseFloat(val)) && isFinite(val) && val>val1;
-            }
+            },
+            errMessage:"Swap Rate must be greater than zero"
         }],
         "9":[{
             label:"Maturity (years)",
@@ -192,14 +207,16 @@
             depends:"t",
             validation:function(val, val1){
                 return !isNaN(parseFloat(val)) && isFinite(val) && val*360>val1;
-            }
+            },
+            errMessage:"Maturity must be greater than the \"Simulate to date\""
         },{
             label:"Floating Tenor (years)",
             id:"delta",
             placeholder:".25",
             validation:function(val, val1){
                 return !isNaN(parseFloat(val)) && isFinite(val) && val>val1;
-            }
+            },
+            errMessage:"Tenor must be greater than zero"
         },{
             label:"Underlying Maturity (years)",
             id:"Tm",
@@ -207,14 +224,16 @@
             depends:"T",
             validation:function(val, val1){
                 return !isNaN(parseFloat(val)) && isFinite(val) && val>val1;
-            }
+            },
+            errMessage:"Underlying Maturity must be greater than Maturity"
         },{
             label:"Strike",
             id:"k",
             placeholder:".03",
             validation:function(val, val1){
                 return !isNaN(parseFloat(val)) && isFinite(val) && val>val1;
-            }
+            },
+            errMessage:"Strike must be greater than zero"
         }]
     }
     var validator={};
@@ -222,7 +241,9 @@
         var n=assetParameters[key].length;
         validator[key]={};
         for(var i=0; i<n; i++){
-            validator[key][assetParameters[key][i].id]=assetParameters[key][i].validation;
+            validator[key][assetParameters[key][i].id]={};
+            validator[key][assetParameters[key][i].id].validation=assetParameters[key][i].validation;
+            validator[key][assetParameters[key][i].id].errMessage=assetParameters[key][i].errMessage;
         }
     }
     var selectedAsset="";
@@ -232,6 +253,7 @@
     var form = Handlebars.templates['MarketRiskParameters'];
     var display = Handlebars.templates['largetext'];
     var parameters = Handlebars.templates['AssetParameters'];
+    var stdparameters = Handlebars.templates['StandardParameters'];
     var modalBRS = Handlebars.templates['modal'];
     var modal=new loadModal(modalBRS);
     var $main=$('#main');
@@ -247,6 +269,7 @@
         if(keys[0]==='Spot'||keys[0]==='Forward'){ 
             if(!hasbutton){
                 $main.html(form({assets:assets}));
+                $andmore.html(stdparameters());
                 hasbutton=true;
             }
             createChart(data[keys[0]], keys[0]);
@@ -272,14 +295,16 @@
             }
             var id=$el.attr('id');
             if(validator[selectedAsset][id]){
-                var validate=validator[selectedAsset][id](vl, vl1);
+                var validate=validator[selectedAsset][id].validation(vl, vl1);
                 if(validate){
                     valsToSubmit[id]=parseFloat(vl);
                     $el.parent().removeClass('has-error');
+                    $el.parent().find('.errmsg').text("");
                 }
                 else{
                     isValidated=false;
                     $el.parent().addClass('has-error');
+                    $el.parent().find('.errmsg').text(validator[selectedAsset][id].errMessage);
                 }
             }
             else{
@@ -292,14 +317,14 @@
             console.log(valsToSubmit);
             socket.emit("getMC", valsToSubmit);
         }
-        else{
+        /*else{
             alert("Data entry error!");
-        }
+        }*/
         
     };
     function displayOptions(val, label){
         selectedAsset=val;
-        $andmore.html(parameters({asset:label, parameter:assetParameters[val]}));
+        $('#assetParameters').html(parameters({asset:label, parameter:assetParameters[val]}));
     }
     function loadHistogram(id, categories, values){
         var chrt = new Highcharts.Chart({

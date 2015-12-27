@@ -3,25 +3,21 @@
 templates['AssetParameters'] = template({"1":function(container,depth0,helpers,partials,data) {
     var helper, alias1=depth0 != null ? depth0 : {}, alias2=helpers.helperMissing, alias3="function", alias4=container.escapeExpression;
 
-  return "        <div class=\"form-group col-md-4 col-sm-6\">\n            <label for=\""
+  return "    <div class=\"form-group col-md-4 col-sm-12\">\n        <label for=\""
     + alias4(((helper = (helper = helpers.id || (depth0 != null ? depth0.id : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"id","hash":{},"data":data}) : helper)))
     + "\">"
     + alias4(((helper = (helper = helpers.label || (depth0 != null ? depth0.label : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"label","hash":{},"data":data}) : helper)))
-    + "</label>\n            <input type=\"text\" class=\"form-control\" id=\""
+    + "</label>\n        <label class='errmsg control-label'></label>\n        <input type=\"text\" class=\"form-control\" id=\""
     + alias4(((helper = (helper = helpers.id || (depth0 != null ? depth0.id : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"id","hash":{},"data":data}) : helper)))
     + "\" placeholder=\""
     + alias4(((helper = (helper = helpers.placeholder || (depth0 != null ? depth0.placeholder : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"placeholder","hash":{},"data":data}) : helper)))
     + "\" data-dependency=\""
     + alias4(((helper = (helper = helpers.depends || (depth0 != null ? depth0.depends : depth0)) != null ? helper : alias2),(typeof helper === alias3 ? helper.call(alias1,{"name":"depends","hash":{},"data":data}) : helper)))
-    + "\">\n        </div>\n\n";
+    + "\">\n    </div>\n";
 },"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
-    var stack1, helper, alias1=depth0 != null ? depth0 : {};
+    var stack1;
 
-  return "<div class='row'>\n    <div class=\"col-sm-12\">\n        <h3>"
-    + container.escapeExpression(((helper = (helper = helpers.asset || (depth0 != null ? depth0.asset : depth0)) != null ? helper : helpers.helperMissing),(typeof helper === "function" ? helper.call(alias1,{"name":"asset","hash":{},"data":data}) : helper)))
-    + " specific parameters</h3>\n    </div>\n"
-    + ((stack1 = helpers.each.call(alias1,(depth0 != null ? depth0.parameter : depth0),{"name":"each","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
-    + "</div>\n<div class='row'>\n    <div class=\"form-group col-md-4 col-sm-6\">\n        <button class='btn btn-primary' onclick='getMC();'>Run</button>\n    </div>\n</div>";
+  return ((stack1 = helpers.each.call(depth0 != null ? depth0 : {},(depth0 != null ? depth0.parameter : depth0),{"name":"each","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "");
 },"useData":true});
 templates['MarketRiskParameters'] = template({"1":function(container,depth0,helpers,partials,data) {
     var helper, alias1=depth0 != null ? depth0 : {}, alias2=helpers.helperMissing, alias3="function", alias4=container.escapeExpression;
@@ -36,7 +32,10 @@ templates['MarketRiskParameters'] = template({"1":function(container,depth0,help
 
   return "<div class='row'>\n    <div class='col-md-8 col-sm-12' id='chart'>\n    \n    </div>\n    <div class=\"form-group col-md-4 col-sm-12\">\n        <label for=\"asset\">Asset Type</label>\n        <select id='asset' class=\"form-control\" onchange=\"displayOptions(this.value, this.options[this.selectedIndex].text)\">\n            <option value=\"\" disabled selected style=\"display:none;\"></option>\n"
     + ((stack1 = helpers.each.call(depth0 != null ? depth0 : {},(depth0 != null ? depth0.assets : depth0),{"name":"each","hash":{},"fn":container.program(1, data, 0),"inverse":container.noop,"data":data})) != null ? stack1 : "")
-    + "        </select>\n    </div>\n    <div class=\"form-group col-md-4 col-sm-6\">\n        <label for=\"n\">Number of simulations</label>\n        <input type=\"text\" class=\"form-control\" id=\"n\" placeholder=\"1000\" pattern=\"/^[+]?([0-9])$/\">\n    </div>\n    <div class=\"form-group col-md-4 col-sm-6\">\n        <label for=\"sigma\">Volatility</label>\n        <input type=\"text\" class=\"form-control\" id=\"sigma\" placeholder=\".04\" pattern=\"/^[+]?([0-9]+(?:[\\.][0-9]*)?|\\.[0-9]+)$/\">\n    </div>\n    <div class=\"form-group col-md-4 col-sm-6\">\n        <label for=\"a\">Mean Reversion</label>\n        <input type=\"text\" class=\"form-control\" id=\"a\" placeholder=\".2\" pattern=\"/^[+]?([0-9]+(?:[\\.][0-9]*)?|\\.[0-9]+)$/\">\n    </div>\n    <div class=\"form-group col-md-4 col-sm-6\">\n        <label for=\"t\">Simulate to date (in days)</label>\n        <input type=\"text\" class=\"form-control\" id=\"t\" placeholder=\"10\" pattern=\"/^[+]?([0-9]+(?:[\\.][0-9]*)?|\\.[0-9]+)$/\"> \n    </div>\n</div>";
+    + "        </select>\n    </div>\n    <div id='assetParameters'></div>\n    \n</div>";
+},"useData":true});
+templates['StandardParameters'] = template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
+    return "<div class='row'>\n \n    <div class=\"form-group col-md-3 col-sm-6\">\n        <label for=\"n\">Number of simulations</label>\n        <input type=\"text\" class=\"form-control\" id=\"n\" placeholder=\"1000\" pattern=\"/^[+]?([0-9])$/\">\n    </div>\n    <div class=\"form-group col-md-3 col-sm-6\">\n        <label for=\"sigma\">Volatility</label>\n        <input type=\"text\" class=\"form-control\" id=\"sigma\" placeholder=\".04\" pattern=\"/^[+]?([0-9]+(?:[\\.][0-9]*)?|\\.[0-9]+)$/\">\n    </div>\n    <div class=\"form-group col-md-3 col-sm-6\">\n        <label for=\"a\">Mean Reversion</label>\n        <input type=\"text\" class=\"form-control\" id=\"a\" placeholder=\".2\" pattern=\"/^[+]?([0-9]+(?:[\\.][0-9]*)?|\\.[0-9]+)$/\">\n    </div>\n    <div class=\"form-group col-md-3 col-sm-6\">\n        <label for=\"t\">Simulate to date (in days)</label>\n        <input type=\"text\" class=\"form-control\" id=\"t\" placeholder=\"10\" pattern=\"/^[+]?([0-9]+(?:[\\.][0-9]*)?|\\.[0-9]+)$/\"> \n    </div>\n</div>  \n<div class='row'>\n    <div class=\"form-group col-md-3 col-sm-6\">\n        <button class='btn btn-primary' onclick='getMC();'>Run</button>\n    </div>\n</div>";
 },"useData":true});
 templates['largetext'] = template({"1":function(container,depth0,helpers,partials,data) {
     var helper, alias1=container.escapeExpression;
