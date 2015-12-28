@@ -295,27 +295,39 @@
                 vl1=dependsElement.val()||dependsElement.attr('placeholder');
             }
             var id=$el.attr('id');
-            if(validator[selectedAsset][id]){
-                var validate=validator[selectedAsset][id].validation(vl, vl1);
-                if(validate){
-                    valsToSubmit[id]=parseFloat(vl);
-                    $el.parent().removeClass('has-error');
-                    $el.parent().find('.errmsg').text("");
-                    if(dependsElement){
-                        dependsElement.parent().removeClass('has-error');
-                    }
+            vl=parseFloat(vl);
+            var isValidNumber=!isNaN(vl);///^[1-9]\d{0,2}(\.\d{3})*(,\d+)?$/.test(vl1);
+            var errMessage="";
+            //console.log(vl);
+            var validate=false;
+            if(!isValidNumber){
+                errMessage="Requires a valid number";
+            }
+            else{
+                if(selectedAsset&&validator[selectedAsset][id]){
+                    errMessage=validator[selectedAsset][id].errMessage;
+                    validate=validator[selectedAsset][id].validation(vl, vl1);
                 }
                 else{
-                    isValidated=false;
-                    $el.parent().addClass('has-error');
-                    $el.parent().find('.errmsg').text(validator[selectedAsset][id].errMessage);
-                    if(dependsElement){
-                        dependsElement.parent().addClass('has-error');
-                    }
+                    validate=true;
+                    valsToSubmit[id]=vl;//parseFloat(vl);
+                }
+            }            
+            if(validate){
+                valsToSubmit[id]=vl;//parseFloat(vl);
+                $el.parent().removeClass('has-error');
+                $el.parent().find('.errmsg').text("");
+                if(dependsElement){
+                    dependsElement.parent().removeClass('has-error');
                 }
             }
             else{
-                valsToSubmit[id]=parseFloat(vl);
+                isValidated=false;
+                $el.parent().addClass('has-error');
+                $el.parent().find('.errmsg').text(errMessage);
+                if(dependsElement){
+                    dependsElement.parent().addClass('has-error');
+                }
             }
         });
         if(isValidated){
