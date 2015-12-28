@@ -53,9 +53,9 @@ templates['largetext'] = template({"1":function(container,depth0,helpers,partial
 templates['modal'] = template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
     var helper;
 
-  return "<!-- Modal -->\n<div class=\"modal fade\" id=\"newModal\" tabindex=\"-1\" role=\"dialog\" ><!--aria-labelledby=\"myModalLabel\">-->\n  <div class=\"modal-dialog modal-lg\" role=\"document\">\n    <div class=\"modal-content\">\n      <div class=\"modal-header\">\n        <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>\n        <h4 class=\"modal-title\" id=\"myModalLabel\">"
+  return "<!-- Modal -->\n<div class=\"modal\" id=\"newModal\" tabindex=\"-1\" role=\"dialog\" ><!--aria-labelledby=\"myModalLabel\">-->\n  <div class=\"modal-dialog modal-lg\" role=\"document\">\n    <div class=\"modal-content\">\n      <div class=\"modal-header\">\n        <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>\n        <h4 class=\"modal-title\" id=\"myModalLabel\">"
     + container.escapeExpression(((helper = (helper = helpers.title || (depth0 != null ? depth0.title : depth0)) != null ? helper : helpers.helperMissing),(typeof helper === "function" ? helper.call(depth0 != null ? depth0 : {},{"name":"title","hash":{},"data":data}) : helper)))
-    + "</h4>\n      </div>\n      <div class=\"modal-body\">\n        \n      </div>\n      <div class=\"modal-footer\">\n        <button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">Close</button>\n\n      </div>\n    </div>\n  </div>\n</div>";
+    + "</h4>\n      </div>\n      <div class=\"modal-body\">\n          <div class=\"row\">\n              <div class='col-md-12' id='interior'>\n              </div>\n          </div>\n      </div>\n      <div class=\"modal-footer\">\n        <button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">Close</button>\n\n      </div>\n    </div>\n  </div>\n</div>";
 },"useData":true});
 templates['progressbar'] = template({"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
     var helper;

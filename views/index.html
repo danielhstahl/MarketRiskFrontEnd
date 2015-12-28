@@ -255,7 +255,7 @@
     var parameters = Handlebars.templates['AssetParameters'];
     var stdparameters = Handlebars.templates['StandardParameters'];
     var modalBRS = Handlebars.templates['modal'];
-    var modal=new loadModal(modalBRS);
+    var modal=new loadModal(modalBRS, "hide");
     var $main=$('#main');
     var $andmore=$('#andmore');
 
@@ -281,7 +281,7 @@
             loadHistogram(modal.interior[0], data['bins'], data['count']);
         }
     });
-    getMC=function(){
+    var getMC=function(){
         var valsToSubmit={};
         var isValidated=true;
         $('.form-control').each(function(num, element){
@@ -289,9 +289,10 @@
             var depends=$el.data('dependency');
             var vl=$el.val()||$el.attr('placeholder');
             var vl1=0;
+            var dependsElement="";
             if(depends){
-                vl1=$('#'+depends);
-                vl1=vl1.val()||vl1.attr('placeholder');
+                dependsElement=$('#'+depends);
+                vl1=dependsElement.val()||dependsElement.attr('placeholder');
             }
             var id=$el.attr('id');
             if(validator[selectedAsset][id]){
@@ -300,11 +301,17 @@
                     valsToSubmit[id]=parseFloat(vl);
                     $el.parent().removeClass('has-error');
                     $el.parent().find('.errmsg').text("");
+                    if(dependsElement){
+                        dependsElement.parent().removeClass('has-error');
+                    }
                 }
                 else{
                     isValidated=false;
                     $el.parent().addClass('has-error');
                     $el.parent().find('.errmsg').text(validator[selectedAsset][id].errMessage);
+                    if(dependsElement){
+                        dependsElement.parent().addClass('has-error');
+                    }
                 }
             }
             else{
@@ -317,17 +324,13 @@
             console.log(valsToSubmit);
             socket.emit("getMC", valsToSubmit);
         }
-        /*else{
-            alert("Data entry error!");
-        }*/
-        
     };
     function displayOptions(val, label){
         selectedAsset=val;
         $('#assetParameters').html(parameters({asset:label, parameter:assetParameters[val]}));
     }
     function loadHistogram(id, categories, values){
-        var chrt = new Highcharts.Chart({
+        var hist = new Highcharts.Chart({
             chart: {    
                 
                 renderTo: id,
@@ -346,21 +349,14 @@
             },
             xAxis: {
                 type: 'category',
-                categories:categories
+                categories:categories,
+                title:{
+                    text:'Price'
+                }
             },
             yAxis: {
                 title: {
-                    text: 'Value'
-                },
-                plotLines: [{
-                    value: 0,
-                    width: 1,
-                    color: '#808080'
-                }]
-            },
-            tooltip: {
-               formatter: function() {
-                    return Highcharts.numberFormat(this.value, 2, ".", ",");
+                    text: 'Frequency'
                 }
             },
             legend: {
@@ -370,7 +366,7 @@
                 enabled: false
             },
             series: [{
-                name: 'Random data',
+                name: 'Distribution of Prices',
                 data: values
             }]
         });
@@ -395,10 +391,24 @@
                     text:"Spot and Forward Curves"
                 },
                 xAxis:{
-                    type:'category'
+                    type:'category',
+                    title: {
+                        text: 'Years to Maturity'
+                    }
+                },
+                yAxis:{
+                    title: {
+                        text: 'Rate'
+                    }
                 },
                 legend:{
-                    enabled:false
+                    layout: 'vertical',
+                    align: 'right',
+                    verticalAlign: 'bottom',
+                    floating: true,
+                    backgroundColor: '#FFFFFF',
+                    y:-40
+                    //enabled:false
                 },
                 series:[{
                     data:chartData,

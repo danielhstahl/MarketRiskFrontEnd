@@ -1,5 +1,5 @@
 //this class creates the modal and provides utility classes to change various aspects of the modal.
-function loadModal(hndlBarsModal){
+function loadModal(hndlBarsModal, hide){
     this.self={};
     this.interior={};
     this.oldInterior={};
@@ -10,12 +10,22 @@ function loadModal(hndlBarsModal){
     this.launch=function(title){
         var modal=slf.modal({title:title});
         self=$($(modal)[2]);
-        self.modal('show');
         self.on('hidden.bs.modal', function(){ 
             self.remove(); 
         });
-        slf.interior=self.find('.modal-body');
+        slf.interior=self.find('#interior');
         slf.footer=self.find('.modal-footer');
+        if(hide){
+            self.on('show.bs.modal', function(){
+                slf.interior.css('visibility', 'hidden');
+            });
+            self.on('shown.bs.modal', function(){
+                slf.interior.css('visibility', 'initial');
+            });
+        }
+        self.modal('show');
+        
+        
     }
     this.replaceInterior=function(html){
         slf.oldInterior=slf.interior.html();
