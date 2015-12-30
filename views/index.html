@@ -64,6 +64,9 @@
     },{
         label:"Swaption",
         value:9
+    },{
+        label:"American Swaption (Warning: slower solution)",
+        value:10
     }];
     var assetParameters={
         "0":[{
@@ -201,6 +204,41 @@
             errMessage:"Swap Rate must be greater than zero"
         }],
         "9":[{
+            label:"Maturity (years)",
+            id:"T",
+            placeholder:"1",
+            depends:"t",
+            validation:function(val, val1){
+                return !isNaN(parseFloat(val)) && isFinite(val) && val*360>val1;
+            },
+            errMessage:"Maturity must be greater than the \"Simulate to date\""
+        },{
+            label:"Floating Tenor (years)",
+            id:"delta",
+            placeholder:".25",
+            validation:function(val, val1){
+                return !isNaN(parseFloat(val)) && isFinite(val) && val>val1;
+            },
+            errMessage:"Tenor must be greater than zero"
+        },{
+            label:"Underlying Maturity (years)",
+            id:"Tm",
+            placeholder:"6",
+            depends:"T",
+            validation:function(val, val1){
+                return !isNaN(parseFloat(val)) && isFinite(val) && val>val1;
+            },
+            errMessage:"Underlying Maturity must be greater than Maturity"
+        },{
+            label:"Strike",
+            id:"k",
+            placeholder:".03",
+            validation:function(val, val1){
+                return !isNaN(parseFloat(val)) && isFinite(val) && val>val1;
+            },
+            errMessage:"Strike must be greater than zero"
+        }],
+        "10":[{
             label:"Maturity (years)",
             id:"T",
             placeholder:"1",
