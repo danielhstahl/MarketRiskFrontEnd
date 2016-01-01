@@ -10,14 +10,64 @@
   <script src='/socket.io/socket.io.js'></script>
   <script src='/assets/js/inputUtilities.js'></script>
   <script src='/assets/js/loadModal.js'></script>
+    <style type="text/css">
+        .topScreen {
+            margin-top: 30px;
+        }
+        .avatar {
+          height: 48px!important;
+          width: 48px!important;
+        }
+        /*.topScreen {
+            margin: 0;
+            position: fixed;
+            width: 100%;
+          }*/
+        .icon {
+          height: 48px;
+          width: 48px;
+          /*display: block;*/
+        }
+        .float-right {
+          float: right;
+        }
+        #page-content-wrapper {
+            padding: 0;
+          }
+    </style>
 </head>
 <body>
     
     <div class='jumbotron'>
         <div class='container'>
-        <h2>Market Risk</h2>
+            <div id='page-content-wrapper'>
+                
+                <!--<div class='container topScreen'>-->
+                    <div class='row holdIcons'>
+                        <div class='col-xs-5'>
+                            <h2>Market Risk</h2>
+                        </div>
+                        <div class='col-xs-7'>
+                        
+                            <a href='http://personalsite-danielstahl.rhcloud.com/#/home'>
+                                <img class="avatar icon float-right" src="/assets/images/avatar.png">
+                            </a>
+                            <a href='https://www.linkedin.com/profile/view?id=AAIAAAYja3AB_fq6IhUtF5CBw1yjTHheP8YIooE&trk=nav_responsive_tab_profile'>
+                                <img src='assets/icons/linkedin.svg' class='icon float-right'>
+                            </a>
+                            <a href='https://plus.google.com/u/0/+DanielStahl1138'>
+                                <img src='assets/icons/googleplus.svg' class='icon float-right'>
+                            </a>
+                            <a href='https://github.com/phillyfan1138'>
+                                <img src='assets/icons/github.svg' class='icon float-right'>
+                            </a>
+                        </div>
+                    </div>
+                <!--</div>-->
+            </div>
+            
             <p>
-            This standalone app represents the best in class standard in modeling techniques.  The webserver is driven by NodeJS, an asyncronous IO programming language.  The market model itself is implemented in C++ with multi-threading for use across any number of cores.  Automatic differentation is in place to efficiently compute sensitivities.  The model is self-consistent: there is no arbitrage and all assumptions carry across all pricing functions.  
+            This standalone app represents the best in class standard in modeling techniques.  The webserver is driven by NodeJS, an asyncronous IO programming language.  The market model itself is implemented in C++ with multi-threading for use across any number of cores.  Automatic differentation is in place to efficiently compute sensitivities.  The model is self-consistent: there is no arbitrage and all assumptions carry across all pricing functions as described in the <a href='assets/pdfs/MarketRiskDocumentation.pdf'>documentation</a>.
             </p>
         </div>
     </div>
