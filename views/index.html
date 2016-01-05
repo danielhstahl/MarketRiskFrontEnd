@@ -18,6 +18,11 @@
           height: 48px!important;
           width: 48px!important;
         }
+        .lead{
+            margin-top:20px;
+            font-size:16px;
+            font-weight:100;
+        }
         /*.topScreen {
             margin: 0;
             position: fixed;
@@ -66,18 +71,29 @@
                 <!--</div>-->
             </div>
             
-            <p>
-            This standalone app represents the best in class standard in modeling techniques.  The webserver is driven by NodeJS, an asyncronous IO programming language.  The market model itself is implemented in C++ with multi-threading for use across any number of cores.  Automatic differentation is in place to efficiently compute sensitivities.  The model is self-consistent: there is no arbitrage and all assumptions carry across all pricing functions as described in the <a href='assets/pdfs/MarketRiskDocumentation.pdf'>documentation</a>.
-            </p>
+            
         </div>
     </div>
     <div class='container'>
-      <div id='main'>
+        <div class='row panel panel-default'>
+            <div id='description' class='col-md-5'>
+                <p class="lead">
+                    This standalone app represents the best in class standard in modeling techniques.  The webserver is driven by NodeJS, an asyncronous IO programming language.  The market model itself is implemented in C++ with multi-threading for use across any number of cores.  Automatic differentation is in place to efficiently compute sensitivities.  The model is self-consistent: there is no arbitrage and all assumptions carry across all pricing functions as described in the <a href='assets/pdfs/MarketRiskDocumentation.pdf'>documentation</a>.
+                </p>
+            </div>
+            <div id='chart' class='col-md-7 lead'></div>
+        </div>
+        <div class='row'>
+            <div id='marketParameters' >
 
-      </div>
-        <div id='andmore'>
+            </div>
+            <div class='col-md-2'></div>
+            <div id='standardParameters' >
 
-      </div>
+            </div>
+        </div>
+        
+        
     </div>
     
 
@@ -338,17 +354,21 @@
     var chart;
     var hasbutton=false;
     var progressbar = Handlebars.templates['progressbar'];
-    var form = Handlebars.templates['MarketRiskParameters'];
+    var marketParameters = Handlebars.templates['MarketRiskParameters'];
     var display = Handlebars.templates['largetext'];
     var parameters = Handlebars.templates['AssetParameters'];
     var stdparameters = Handlebars.templates['StandardParameters'];
     var modalBRS = Handlebars.templates['modal'];
     var modal=new loadModal(modalBRS, "hide");
-    var $main=$('#main');
-    var $andmore=$('#andmore');
+    
+    
+    var $mrkP=$('#marketParameters');
+    var $stdP=$('#standardParameters');
+    var $chrt=$('#chart');
+
 
     
-    $main.html(progressbar({percent:100}));
+    $chrt.html(progressbar({percent:100}));
     socket.emit("getYield");
     socket.on('data', function(data) {
         data=JSON.parse(data);
@@ -356,8 +376,8 @@
         var keys=Object.keys(data);
         if(keys[0]==='Spot'||keys[0]==='Forward'){ 
             if(!hasbutton){
-                $main.html(form({assets:assets}));
-                $andmore.html(stdparameters());
+                $mrkP.html(marketParameters({assets:assets}));
+                $stdP.html(stdparameters());
                 hasbutton=true;
             }
             createChart(data[keys[0]], keys[0]);
@@ -388,6 +408,7 @@
             var errMessage="";
             //console.log(vl);
             var validate=false;
+            var eParent=$el.parent();
             if(!isValidNumber){
                 errMessage="Requires a valid number";
             }
@@ -403,10 +424,17 @@
             }            
             if(validate){
                 valsToSubmit[id]=vl;//parseFloat(vl);
-                $el.parent().removeClass('has-error');
-                $el.parent().find('.errmsg').text("");
+                if(!eParent.hasClass('standard')){
+                    eParent.removeClass('has-error');
+                    eParent.find('.errmsg').text("");
+                }
                 if(dependsElement){
-                    dependsElement.parent().removeClass('has-error');
+                    var dParent=dependsElement.parent();
+                    if(dParent.hasClass(id)){
+                        dParent.removeClass('has-error');
+                        dParent.removeClass(id);
+                    }
+                    
                 }
             }
             else{
@@ -414,7 +442,13 @@
                 $el.parent().addClass('has-error');
                 $el.parent().find('.errmsg').text(errMessage);
                 if(dependsElement){
-                    dependsElement.parent().addClass('has-error');
+                    var dParent=dependsElement.parent();
+                    console.log("got here");
+                    
+                    dParent.addClass('has-error '+id);
+                    /*console.log(dParent);
+                    dParent.addClass(id);
+                    console.log(dParent);*/
                 }
             }
         });
@@ -427,6 +461,9 @@
     };
     function displayOptions(val, label){
         selectedAsset=val;
+        $('.standard').each(function(num, elem){
+            $(elem).removeClass('has-error');
+        })
         $('#assetParameters').html(parameters({asset:label, parameter:assetParameters[val]}));
     }
     function loadHistogram(id, categories, values){
@@ -488,7 +525,8 @@
                     zoomType: 'x'
                 },
                 title:{
-                    text:"Spot and Forward Curves"
+                    text:"Spot and Forward Curves",
+                    style:{ "color": "#333", "fontSize": "16px" }
                 },
                 xAxis:{
                     type:'category',
