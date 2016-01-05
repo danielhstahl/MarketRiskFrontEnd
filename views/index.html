@@ -75,7 +75,8 @@
         </div>
     </div>
     <div class='container'>
-        <div class='row panel panel-default'>
+      <div class='row'>
+        <div class='panel panel-default'>
             <div id='description' class='col-md-5'>
                 <p class="lead">
                     This standalone app represents the best in class standard in modeling techniques.  The webserver is driven by NodeJS, an asyncronous IO programming language.  The market model itself is implemented in C++ with multi-threading for use across any number of cores.  Automatic differentation is in place to efficiently compute sensitivities.  The model is self-consistent: there is no arbitrage and all assumptions carry across all pricing functions as described in the <a href='assets/pdfs/MarketRiskDocumentation.pdf'>documentation</a>.
@@ -83,12 +84,14 @@
             </div>
             <div id='chart' class='col-md-7 lead'></div>
         </div>
+        
+      </div>
+        
         <div class='row'>
-            <div id='marketParameters' >
+            <div id='marketParameters' class='col-md-6 col-sm-12'>
 
             </div>
-            <div class='col-md-2'></div>
-            <div id='standardParameters' >
+            <div id='standardParameters' class='col-md-6 col-sm-12'>
 
             </div>
         </div>
